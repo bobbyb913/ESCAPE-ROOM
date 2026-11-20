@@ -1,0 +1,4 @@
+Good job!
+You have to restore the server connections with the missing cables.
+You should be able to find the proper configuration on page #.
+The proper configuration should help reveal a five-character admin password hidden in the room.

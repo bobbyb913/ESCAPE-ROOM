@@ -2,106 +2,88 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>1999 Retro CRT Terminal</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Atlas System Console</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <!-- CRT Outer Monitor Housing and Curvature/Scanlines -->
-  <div class="crt-monitor">
-    <!-- Matrix Rain Digital Phosphor Background Canvas -->
-    <canvas id="matrix-canvas"></canvas>
-
-    <!-- Scanline Raster Overlay -->
-    <div class="crt-scanlines"></div>
-
-    <!-- Radial Vignette Curvature Distortion Overlay -->
-    <div class="crt-vignette"></div>
-
-    <!-- CRT Phosphor Flicker Overlay -->
-    <div class="crt-flicker"></div>
-
-    <!-- CRT Screen Content -->
-    <div class="crt-screen-content">
-      
-      <!-- Top Header Bar with System Info and Top-Right Digital Countdown Timer (15:00) -->
-      <header class="crt-header">
-        <div class="header-left">
-          <span id="state-badge" class="system-badge">INTRO</span>
-          <span class="system-title">PROJECT ATLAS // Y2K CONSOLE</span>
-        </div>
-        <div class="header-center">
-          <span id="system-status-indicator">[EMERGENCY PROTOCOL ARMED]</span>
-        </div>
-        <div class="header-right">
-          <div class="timer-box">
-            <span class="timer-label">COUNTDOWN:</span>
-            <span id="timer-display" class="timer-display">15:00</span>
-          </div>
-        </div>
-      </header>
-
-      <!-- Terminal Output Log History Area (Scrollable with Hidden Scrollbars) -->
-      <main id="terminal-body" class="terminal-body">
-        <div id="terminal-history" class="terminal-history">
-          <!-- Dynamically populated terminal log entries and system outputs -->
-        </div>
-      </main>
-
-      <!-- Bottom Command Line Input Area with Blinking Block Cursor (█) -->
-      <footer class="terminal-footer">
-        <div class="command-line-wrapper">
-          <span id="prompt-symbol" class="prompt-symbol">C:\SYSTEM\Y2K&gt;</span>
-          <div class="input-container">
-            <span id="command-display" class="command-display"></span><span class="block-cursor">█</span>
-            <!-- Hidden input that retains global focus and processes keystrokes -->
-            <input 
-              type="text" 
-              id="hidden-input" 
-              class="hidden-terminal-input" 
-              autocomplete="off" 
-              autocorrect="off" 
-              autocapitalize="off" 
-              spellcheck="false" 
-              autofocus
-            >
-          </div>
-        </div>
-
-        <!-- Sub-footer Status Bar -->
-        <div class="footer-status-bar">
-          <span>TYPE "HELP" OR "HINT" FOR COMMANDS | PRESS ENTER TO SUBMIT</span>
-          <div style="display: flex; gap: 12px; align-items: center;">
-            <button type="button" id="hint-trigger-btn" class="crt-pill-btn" aria-haspopup="dialog" aria-controls="hint-modal">[ ? HINT ]</button>
-            <span id="audio-status" class="audio-pill active">SND: ON</span>
-            <span>MEM: 128MB OK</span>
-            <span>BAUD: 56000</span>
-          </div>
-        </div>
-      </footer>
-
-      <!-- Interactive CRT Tiered Help / Hint Dialog -->
-      <div id="hint-modal" class="hint-modal" role="dialog" aria-modal="true" aria-labelledby="hint-modal-question" hidden>
-        <div class="hint-dialog-box">
-          <div class="hint-dialog-header">
-            <span id="hint-phase-badge" class="hint-phase-tag">PHASE 1</span>
-            <span class="hint-dialog-brand">ATLAS HELP SYSTEM // HINT_MATRIX.SYS</span>
-            <button type="button" id="hint-close-btn" class="hint-close-btn" aria-label="Close help dialog">[ ESC: CLOSE ]</button>
-          </div>
-          <div id="hint-dialog-body" class="hint-dialog-body"></div>
-          <div class="hint-dialog-footer">
-            <span id="hint-dialog-status">KEYS [1-3] SELECT TOPIC | [ESC] CLOSE</span>
-            <span id="hint-counter-badge">HINTS USED: 0</span>
-          </div>
-        </div>
-      </div>
-
+<body class="start-active">
+  <section id="start-screen" aria-label="Start game">
+    <div class="start-alerts" aria-hidden="true">
+      <span class="start-alert start-alert-1 urgent-word">URGENT</span>
+      <span class="start-alert start-alert-2">!</span>
+      <span class="start-alert start-alert-3">!</span>
+      <span class="start-alert start-alert-4 urgent-word">URGENT</span>
+      <span class="start-alert start-alert-5">!</span>
+      <span class="start-alert start-alert-6">!</span>
+      <span class="start-alert start-alert-7">!</span>
+      <span class="start-alert start-alert-8 urgent-word">URGENT</span>
+      <span class="start-alert start-alert-9">!</span>
+      <span class="start-alert start-alert-10">!</span>
+      <span class="start-alert start-alert-11">!</span>
+      <span class="start-alert start-alert-12">!</span>
+      <span class="start-alert start-alert-13">!</span>
+      <span class="start-alert start-alert-14">!</span>
+      <span class="start-alert start-alert-15">!</span>
     </div>
+    <button id="begin-communication" type="button">
+      <span class="begin-label">BEGIN COMMUNICATION</span>
+    </button>
+  </section>
+  <div id="game-console" hidden>
+    <header>
+      <span>ATLAS SYSTEM CONSOLE</span>
+      <span id="countdown" role="timer" aria-label="Time to midnight">--:--:--</span>
+      <span>TYPE 'HELP' FOR A HINT</span>
+    </header>
+    <main>
+      <pre id="script-display" aria-live="polite"></pre>
+      <pre id="terminal-output" role="log" aria-live="polite"></pre>
+      <section id="game-master-controls" aria-label="Game master controls" hidden>
+        <div class="admin-control-row" aria-label="Display controls">
+          <span class="admin-row-label">DISPLAY</span>
+          <div class="admin-row-buttons">
+            <button id="fullscreen-toggle" type="button">ENTER FULLSCREEN</button>
+          </div>
+        </div>
+        <div class="admin-control-row" aria-label="Light connection controls">
+          <span class="admin-row-label">LIGHTS</span>
+          <div class="admin-row-buttons">
+            <button id="lights-toggle" type="button">ENABLE LIGHTS</button>
+            <button id="ble-connect" type="button" hidden>CONNECT LIGHTS</button>
+            <span id="ble-status" role="status" aria-live="polite">Lights: disabled</span>
+          </div>
+        </div>
+        <div class="admin-control-row" aria-label="Light state tests">
+          <span class="admin-row-label">TEST LIGHT STATES</span>
+          <div class="admin-row-buttons">
+            <button type="button" data-light-state="idle">IDLE</button>
+            <button type="button" data-light-state="flashing_red">FLASHING RED</button>
+            <button type="button" data-light-state="solid_red">SOLID RED</button>
+            <button type="button" data-light-state="celebration">CELEBRATION</button>
+          </div>
+        </div>
+        <div class="admin-control-row" aria-label="Game flow controls">
+          <span class="admin-row-label">GAME FLOW</span>
+          <div class="admin-row-buttons">
+            <button id="skip-to-timeout" type="button">SKIP TO 23:59:55</button>
+            <button id="simulate-win" type="button">SIMULATE WIN</button>
+          </div>
+        </div>
+        <div class="admin-control-row" aria-label="Session controls">
+          <span class="admin-row-label">SESSION</span>
+          <div class="admin-row-buttons">
+            <button id="full-reset" type="button">FULL RESET</button>
+            <button id="quit-debug-menu" type="button">RETURN TO GAME</button>
+          </div>
+        </div>
+      </section>
+      <div id="terminal-status" role="status" aria-live="polite"></div>
+    </main>
+    <form id="terminal-form" autocomplete="off">
+      <label for="terminal-input">C:\&gt;</label>
+      <input id="terminal-input" type="text" aria-label="Terminal input" placeholder="ENTER COMMAND OR ADMINISTRATOR PASSWORD" spellcheck="false">
+    </form>
   </div>
-
   <script src="terminal.js"></script>
 </body>
 </html>

@@ -1,0 +1,92 @@
+{
+  "game": {
+    "timerMinutes": 30
+  },
+  "gameMaster": {
+    "password": "britney"
+  },
+  "lights": {
+    "enabledByDefault": false,
+    "serviceUuid": "8d53dc1d-1db7-4cd3-868b-8a527460aa84",
+    "characteristicUuid": "da7b53c1-5b63-4d58-ae7e-8904b215e68c",
+    "winCharacteristicUuid": "c7858c1a-6c8b-4a43-9a9d-b9a420e94801"
+  },
+  "soundEffects": {
+    "events": {
+      "incorrectPassword": "",
+      "correctPassword": {
+        "script1": "mmm_yeah.wav",
+        "script2": "may.wav"
+      },
+      "timeExpired": "time_expired.wav",
+      "powerDown": "power_down.wav",
+      "win": "win.wav"
+    }
+  },
+  "help": {
+    "phases": {
+      "script1": [
+        {
+          "name": "locks",
+          "hints": [
+            "Look for the disks.",
+            "Look through the disks.",
+            "Align the disks to find the combination."
+          ]
+        },
+        {
+          "name": "dates",
+          "hints": [
+            "You'll need to communicate.",
+            "Learn how each input affects both terminals.",
+            "Sync up the dates and then use the button that only controls yours to get to the correct date."
+          ]
+        },
+        {
+          "name": "password",
+          "hints": [
+            "Remember your terminal codes with SPOT.",
+            "Look at the letters in SPOT.",
+            "Match the color/shape with the letters in SPOT for the password."
+          ]
+        }
+      ],
+      "script2": [
+        {
+          "name": "locks",
+          "hints": [
+            "Look for the birds.",
+            "The birds encode the combination.",
+            "The birds use binary to encode the combination."
+          ]
+        },
+        {
+          "name": "server",
+          "hints": [
+            "Use logic to connect the sockets.",
+            "Use the logic puzzle on page # to connect the sockets.",
+            "E goes with 5."
+          ]
+        },
+        {
+          "name": "admin",
+          "hints": [
+            "I Spy a poster.",
+            "The grid is in the server.",
+            "Use the coordinates from the server grid to find the letters in the poster."
+          ]
+        }
+      ],
+      "script3": [
+        {
+          "name": "maze",
+          "hints": [
+            "Look for the birds.",
+            "The birds encode the combination.",
+            "The birds use binary to encode the combination."
+          ]
+        }
+      ]
+    }
+  }
+}

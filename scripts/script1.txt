@@ -1,0 +1,4 @@
+You have wandered into this server room at the IBM New Year’s Eve party.
+Nobody has noticed a bug that when the new year turns over all of the datekeeping systems will no longer work, throwing the world into chaos.
+The first task is to resolve the mismatched system dates to today’s and tomorrow’s dates and enter the four-character password into the terminal.
+It is 11:30.

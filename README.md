@@ -1,93 +1,127 @@
-# 1999 Retro CRT Terminal - Project Atlas Escape Room
+# Atlas System Console
 
-A full-screen retro CRT terminal web application styled after late-90s mainframe systems with an authentic Y2K escape room storyline.
+A simple browser terminal that displays editable scripts and advances when players enter the passwords.
 
-## Escape Room State Machine (Figma Group 2 Flow)
+When the page opens, click **BEGIN COMMUNICATION** to start Script 1 and begin the game.
 
-The terminal operates on a 6-stage finite state machine aligned with the official Figma escape room design:
-1. **`INTRO`**:
-   - Auto-starts the 15:00 digital countdown timer.
-   - Displays the emergency alert: `PROJECT ATLAS. Y2K RECOVERY FAILURE DETECTED. EMERGENCY PROTOCOL ARMED.`
-   - Typewrites Dr. Elena Ferland's emergency transmission character-by-character with mechanical typing sounds (click or press Enter to skip).
-   - Upon completion, automatically transitions to `PUZZLE_1`, clears the screen, and prints `STEP 1: VERIFY SYSTEM DATE // PHASE 1`.
-2. **`PUZZLE_1` (Phase 1 — Before `OOPS`)**:
-   - Title: `STEP 1: VERIFY SYSTEM DATE // PHASE 1`
-   - Story beat: Align layered floppy disks for lock combinations, sync dual physical terminals to the target date, and match color/shape codes with **SPOT**.
-   - Canonical Admin Password: **`OOPS`** (case-insensitive).
-   - Tiered Hints (`[ ? HINT ]` / `HINT`): **Locks**, **Terminal**, **Admin password** (each with Hint 1 -> Hint 2 -> Hint 3).
-   - On Error: Prints `'ERR: INVALID SYSTEM DATE - RETRY'` in red, returning prompt to green for the next attempt.
-   - On Success: Prints `'SYSTEM DATE VERIFIED. RECOVERY 1 OF 3 COMPLETE.'`, triggers Dr. Ferland's Phase 2 dialogue, and advances to `PUZZLE_2`.
-3. **`PUZZLE_2` (Phase 2 — After `OOPS`, Before `NSYNC`)**:
-   - Title: `STEP 2: MAINFRAME SERVER CONNECTIONS // PHASE 2`
-   - Story beat: Decode the binary birds poster for locks, use the manual logic puzzle (`?page=<num>` configurable) to wire server sockets, and read server grid coordinates (`E5` etc.) on the I-Spy poster.
-   - Canonical Admin Password: **`NSYNC`** (also accepts `'N SYNC`, `N-SYNC`, `N'SYNC`, `*NSYNC`).
-   - Tiered Hints (`[ ? HINT ]` / `HINT`): **Locks**, **Server connections**, **Admin password** (each with Hint 1 -> Hint 2 -> Hint 3).
-   - On Success: Prints `'SERVER CONNECTIONS SYNCHRONIZED. EMERGENCY STORAGE BUFFER UNLOCKED.'`, plays `audio/server_online.wav`, triggers Dr. Ferland's transmission introducing the Maze, and advances to `PUZZLE_3`.
-   - Continuous Countdown: The 15:00 countdown timer continues running uninterrupted across all transitions.
-4. **`PUZZLE_3` (Phase 3 — After `NSYNC` / Mainframe Directory Maze & Safe Recovery)**:
-   - Title: `STEP 3: MAINFRAME DIRECTORY MAZE // PHASE 3`
-   - Tiered Hints (`[ ? HINT ]` / `HINT`): **Maze** (Hint 1 -> Hint 2 -> Hint 3).
-   - Interactive Filesystem Console:
-     - `DIR` / `LS`: List files and subfolders in MS-DOS table format.
-     - `CD <dir>`: Navigate folders (`CD RESTRICTED`, `CD VAULT`, `CD ..`, `CD \`).
-     - `TYPE <file>` / `CAT <file>`: View text files.
-     - `TREE`: Display complete ASCII directory hierarchy.
-     - `MAP` / `MAZE`: Display memory sector radar visualization.
-     - `PWD`: Print current directory.
-   - Vault Target: Navigating to `C:\RESTRICTED\VAULT\` and reading `SAFE_KEY.TXT` reveals the physical safe combination: **`8492`**.
-   - Safe Retrieval: Players open the physical safe in the room and retrieve the Emergency Recovery Flash Drive.
-   - Flash Drive Authentication: Players enter the code on the drive label (Canonical: `ATLAS-2000`, also accepts `8492`, `FLASH`, `MOUNT D:`).
-   - Warning Trigger: Displays flashing red alert:
-     `EMERGENCY RECOVERY DRIVE DETECTED. FINAL AUTHORIZATION REQUIRED.`
-   - Interactive Abort Button: Replaces the command prompt with a clickable, ASCII-styled button:
-     `[ ABORT EMERGENCY PROTOCOL ]`
-   - On Click / Activation:
-     - Countdown timer stops immediately.
-     - Screen clears.
-     - Staggered sequence of system checks prints (`BOULDER NODE - ONLINE`, `POWER SYSTEMS - STABLE`, etc.).
-     - Screen text color shifts to a calm terminal white (`theme-white`).
-     - Displays `PROJECT ATLAS: EMERGENCY PROTOCOL CANCELLED`.
-     - Dr. Elena Ferland's final victory transmission is printed via typewriter.
-     - Displays a large `JANUARY 1, 2000 - 00:00:00` millennium banner.
-5. **`VICTORY`**:
-   - Freezes the countdown timer.
-   - Plays a triumphant retro victory fanfare.
-   - Displays celebratory ASCII banner, mission completion statistics, elapsed time, and remaining time.
+## Countdown
 
-## Retro Audio & Voice Synthesis
+The header clock begins when Script 1 audio finishes and counts up to midnight. For example, a 30-minute timer starts at `23:30:00`, and a 45-minute timer starts at `23:15:00`. Edit `game.timerMinutes` in `config.json` to change the duration in whole minutes:
 
-- **Y2K Robotic Voice Prompts** (sampled with late-90s mainframe robotic synthesis + Web Speech fallback):
-  - `audio/puzzle1.wav` : *"Please add password 1."* (plays upon entering Step 1)
-  - `audio/puzzle2.wav` : *"Please add password 2."* (plays upon entering Step 2)
-  - `audio/puzzle3.wav` : *"Please add password 3."* (plays upon entering Step 3)
-  - `audio/warning_abort.wav` : *"Emergency recovery drive detected. Final authorization required."*
-  - `audio/system_verified.wav` : *"System date verified. Recovery 1 of 3 complete."*
-  - `audio/boulder_online.wav` : *"Boulder network online."*
-  - `audio/protocol_cancelled.wav` : *"Project Atlas. Emergency protocol cancelled."*
-  - `audio/error_retry.wav` : *"Error. Invalid entry. Retry."*
+```json
+{
+  "game": {
+    "timerMinutes": 30
+  }
+}
+```
 
-- **Mechanical Y2K Typing Sounds**:
-  - Multi-sample mechanical keyboard audio (`click1.wav` – `click5.wav`) with randomized pitch and timbre variations.
-  - Deep mechanical stabilizer clack for `Space` (`space.wav`).
-  - Heavy mechanical bottom-out and return clack for `Enter` (`enter.wav`).
-  - Crisp switch clack for `Backspace`.
-  - Layered with real-time zero-latency Web Audio API physical impulse and acoustic body synthesis on every keystroke and typewriter character.
+When five minutes remain, connected lights switch to `flashing_red`.
 
-## Terminal Controls & Commands
+When the timer expires, the game enters the lost state, displays `scripts\script4.txt`, plays `scripts\script4.wav`, and sets connected lights to solid red. The `scripts\script4.wav` file is a silent placeholder; replace it with the loss audio. Full reset returns to the start screen and resets the timer.
 
-During any state, players can execute:
-- `hint [topic]` (or click `[ ? HINT ]` / press `F1`) : Opens `"Would you like help with?"` interactive progressive hint system (Hint 1 -> Hint 2 -> Hint 3).
-- `status` : Displays current escape room state, countdown timer, and system health.
-- `scan` : Runs a retro network port scan.
-- `matrix` : Toggles background green digital phosphor rain.
-- `color <green|amber|cyan|white>` : Switches CRT phosphor spectrum tint.
-- `audio` : Toggles synthesized mechanical sound effects.
-- `clear` : Clears the screen buffer (`Ctrl + L`).
-- `reboot` : Restarts the simulation back to `INTRO`.
-- `skip` : Developer override to advance to the next puzzle stage.
+After Script 4 audio finishes, the configured power-down sound plays during the console's CRT-style animation to black. The timeout sound continues independently. Click anywhere to restore the final screen.
 
-## How to Run
+The win state is available through `window.atlasWinGame()`. Calling it stops the timer without triggering a loss, changes the clock display to `00:00:00`, displays and plays Script 5, plays the configured win sound, and sets connected lights to `celebration`. Script 5 displays the elapsed game time. Completed times are saved in browser `localStorage` under `atlasWinHistory` and exposed at runtime as `window.atlasWinHistory`; a full reset does not clear this history. To test it, enter the game master menu and click **SIMULATE WIN** or type `WIN TEST`. Connect a puzzle's success condition to `window.atlasWinGame()` when that condition is ready. Script 5 and its WAV file are editable in `scripts\script5.txt` and `scripts\script5.wav`.
 
-1. Open `index.html` in any modern web browser (optionally pass `?page=5` in the URL to set the manual logic puzzle page number for Phase 2 Hint 2).
-2. Watch Dr. Ferland's transmission or click to fast-forward.
-3. Enter Phase 1 Admin Password `OOPS`, Phase 2 Admin Password `NSYNC`, navigate the Phase 3 Maze (`CD RESTRICTED`, `CD VAULT`, `TYPE SAFE_KEY.TXT`) to get `8492`, then enter `ATLAS-2000` to trigger the final abort sequence.
+## Scripts
+
+Edit these files to change what appears on screen:
+
+- `scripts\script1.txt` appears when the console opens.
+- `scripts\script1.wav` plays when Script 1 is displayed.
+- Enter `OOPS` to display `scripts\script2.txt`.
+- `scripts\script2.wav` plays when Script 2 is displayed.
+- Enter `NSYNC` to display `scripts\script3.txt`.
+- `scripts\script3.wav` plays when Script 3 is displayed.
+- When time expires, `scripts\script4.txt` and `scripts\script4.wav` are used for the lost state.
+- On a win, `scripts\script5.txt` and `scripts\script5.wav` are used for the win screen.
+
+The script files are plain text. Their contents are displayed as-is, including line breaks.
+Script text is revealed with a typewriter effect; other interface text appears normally.
+The WAV files are silent placeholders; replace them with recordings to add script audio. Browsers may wait for the first user interaction before allowing audio playback.
+
+Store additional short audio clips in `sound-effects\`.
+
+## ESP32 light controller (BLE)
+
+The browser can connect directly to an ESP32 over Bluetooth Low Energy; no Wi-Fi network or router is needed. Enter the game master password to open the debug menu, enable lights, then click **CONNECT LIGHTS** and select `Atlas-Lights`. BLE support requires a Web Bluetooth-capable Chromium browser on `localhost` or HTTPS.
+
+The `lights` section of `config.json` contains the BLE service and characteristic UUIDs and the optional default enabled setting. The default is disabled. The enabled/disabled setting can also be changed from the game master menu with `LIGHTS ON` and `LIGHTS OFF` and is remembered in this browser. The **CONNECT LIGHTS** picker is only shown in that menu while lights are enabled.
+
+The game master menu has test buttons for **IDLE**, **FLASHING RED**, **SOLID RED**, and **CELEBRATION**. Enable and connect the lights first; selecting a test state sends it to the ESP32.
+
+The browser sends `flashing_red` from the start menu and while Script 1 audio is playing, then `idle` when it ends. When a controller connects, it receives the current light state and subscribes to its win notifications. On timeout, connected lights are set to `solid_red`; on a win, they are set to `celebration`. If lights are disabled, no controller is connected, the user cancels the device picker, or Web Bluetooth is unavailable, the game continues without sending anything. The browser exposes `window.setAtlasLightState("solid_red")` for setting a state.
+
+The starter Arduino sketch is in `esp32-ble-lights\AtlasLights.ino`. Install **NimBLE-Arduino** and **FastLED** from the Arduino Library Manager, select an ESP32 board, and upload the sketch. It is set up for a 100-LED WS2812B strip in GRB order on data pin 13, with brightness 150. Idle is off, flashing red smoothly pulses the full strip using a sine wave, solid red holds the strip red, and celebration animates a rainbow pattern. If your strip uses a different chipset or color order, adjust the `FastLED.addLeds` template in the sketch. Use an appropriately rated external power supply for the LED strip and connect its ground to ESP32 ground.
+
+Wire a momentary pushbutton between GPIO 27 and GND. Pressing it sends a BLE `win` notification to the connected game; the browser enters the win state, stops the timer, displays Script 5, plays the configured win sound, and sets the lights to `celebration`. The button is debounced in the sketch.
+
+## Event sound effects
+
+Edit `soundEffects.events` in `config.json` to assign a clip filename to an event. Put the referenced clips in `sound-effects\`. Leave a filename empty to disable that event's sound:
+
+```json
+{
+  "soundEffects": {
+    "events": {
+      "incorrectPassword": "",
+      "correctPassword": {
+        "script1": "mmm_yeah.wav",
+        "script2": "may.wav"
+      },
+      "timeExpired": "time-expired.wav",
+      "powerDown": "power_down.wav",
+      "win": "win.wav"
+    }
+  }
+}
+```
+
+Incorrect-password audio plays for invalid passwords and unrecognized terminal input; correct-password audio is selected by the current script stage.
+After a correct password, the console displays `PASSWORD CORRECT` until that stage's configured sound effect finishes, then loads the next script. If no sound is configured, it proceeds immediately.
+The configured `sound-effects\time-expired.wav` is currently a silent placeholder. Replace it with the timeout sound to play it alongside the Script 4 audio.
+The configured `sound-effects\power_down.wav` is a silent placeholder. Replace it with the shutdown sound to play it during the CRT power-down animation.
+The configured `sound-effects\win.wav` is a silent placeholder. Replace it with the win sound to play it when the win state begins.
+
+## Configurable help
+
+Edit `help.phases` in `config.json` to add any number of help categories to each script stage. Every category must have a unique name within its stage and exactly three non-empty hints:
+
+```json
+{
+  "help": {
+    "phases": {
+      "script1": [
+        {
+          "name": "Example topic",
+          "hints": ["First hint", "Second hint", "Third hint"]
+        }
+      ],
+      "script2": [],
+      "script3": []
+    }
+  }
+}
+```
+
+Players type `HELP` to list the current stage's categories, then type a category name to reveal its next hint. Hints are shown in order, and each category stops after its third hint. Requested hints are recorded in this browser's `localStorage` under `atlasHintHistory` and are also available at runtime as `window.atlasHintHistory`. Records include the script stage, category, hint number and text, and request time; they are not sent to a server.
+
+## Game master reset
+
+The game master password is set in `gameMaster.password` in `config.json` (currently `britney`). Enter it in the terminal to open the debug menu. Controls are grouped into display, lights, light-state tests, game-flow, and session rows. Click **RETURN TO GAME** to close the menu without changing settings, or **FULL RESET** to return to the start screen and clear saved hint history for a new game. Full reset preserves the fullscreen and lights enabled/disabled settings.
+
+Use the **SKIP TO 23:59:55** admin control, or enter `SKIP TO 23:59:55` in the debug menu, to set the clock five seconds before timeout for testing.
+
+This is a local game-control feature, not secure authentication: the browser must download the configuration file, so anyone with access to the page can inspect the password. Do not reuse a sensitive password or expose this setup as a protected online admin tool.
+
+## Run locally
+
+In PowerShell, run these two commands to start the local server from the project folder:
+
+```powershell
+Set-Location "$HOME\OneDrive\Documents\GitHub\ESCAPE-ROOM"
+py -m http.server 8000 --bind 127.0.0.1
+```
+
+Keep that PowerShell window open while you play. Open `http://127.0.0.1:8000` in Chrome or Firefox. To stop the server, return to PowerShell and press **Ctrl+C**. If the `py` command is not recognized, use `python -m http.server 8000 --bind 127.0.0.1` instead.
