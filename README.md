@@ -32,7 +32,7 @@ Edit these files to change what appears on screen:
 - `scripts\script1.wav` plays when Script 1 is displayed.
 - Enter `OOPS` to display `scripts\script2.txt`.
 - `scripts\script2.wav` plays when Script 2 is displayed.
-- Enter `NSYNC` to display `scripts\script3.txt`.
+- Enter `NSYNC` to display `scripts\script3.txt` and set connected lights to flashing red.
 - `scripts\script3.wav` plays when Script 3 is displayed.
 - When time expires, `scripts\script4.txt` and `scripts\script4.wav` are used for the lost state.
 - On a win, `scripts\script5.txt` and `scripts\script5.wav` are used for the win screen.
@@ -55,7 +55,7 @@ The browser sends `flashing_red` from the start menu and while Script 1 audio is
 
 The starter Arduino sketch is in `esp32-ble-lights\AtlasLights.ino`. Install **NimBLE-Arduino** and **FastLED** from the Arduino Library Manager, select an ESP32 board, and upload the sketch. It is set up for a 100-LED WS2812B strip in GRB order on data pin 13, with brightness 150. Idle is off, flashing red smoothly pulses the full strip using a sine wave, solid red holds the strip red, and celebration animates a rainbow pattern. If your strip uses a different chipset or color order, adjust the `FastLED.addLeds` template in the sketch. Use an appropriately rated external power supply for the LED strip and connect its ground to ESP32 ground.
 
-Wire a momentary pushbutton between GPIO 27 and GND. Pressing it sends a BLE `win` notification to the connected game; the browser enters the win state, stops the timer, displays Script 5, plays the configured win sound, and sets the lights to `celebration`. The button is debounced in the sketch.
+Wire a momentary pushbutton between GPIO 27 and GND. Pressing it sends a BLE `win` notification to the connected game. The game accepts this input only while Script 3 is active; then it enters the win state, stops the timer, displays Script 5, plays the configured win sound, and sets the lights to `celebration`. Notifications received during other phases are ignored. The button is debounced in the sketch.
 
 ## Event sound effects
 

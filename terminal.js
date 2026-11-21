@@ -278,6 +278,10 @@
   function handleWinNotification(event) {
     const message = new TextDecoder().decode(event.target.value).trim();
     if (message === 'win') {
+      if (currentScript !== 3) {
+        console.info('Ignored ESP32 win event outside Script 3.');
+        return;
+      }
       enterWinState();
     } else {
       console.warn(`Ignored unknown ESP32 event "${message}".`);
@@ -825,7 +829,8 @@
       output.textContent = '';
       currentScript = number;
       status.textContent = '';
-      if (number === 2 || number === 3) setLightState('idle');
+      if (number === 2) setLightState('idle');
+      if (number === 3) setLightState('flashing_red');
       playScriptAudio(number);
       return true;
     } catch (error) {
